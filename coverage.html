@@ -55,7 +55,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/anucha-tk/learn_go_test/main.go (23.5%)</option>
+				<option value="file0">github.com/anucha-tk/learn_go_test/main.go (82.4%)</option>
 				
 				</select>
 			</div>
@@ -74,6 +74,7 @@
 import (
         "bufio"
         "fmt"
+        "io"
         "os"
         "strconv"
         "strings"
@@ -83,47 +84,47 @@ func main() <span class="cov0" title="0">{
         intro()
 
         doneChan := make(chan bool)
-        go readUserInput(doneChan)
+        go readUserInput(os.Stdin, doneChan)
         &lt;-doneChan
         close(doneChan)
         fmt.Println("Goodbye")
 }</span>
 
-func intro() <span class="cov0" title="0">{
+func intro() <span class="cov8" title="1">{
         fmt.Println("Is it Prime?")
         fmt.Println("------------")
         fmt.Println("Enter a whole number, and we'll tell you if it is a prime number or not. Enter q to quit.")
         prompt()
 }</span>
 
-func prompt() <span class="cov0" title="0">{
-        fmt.Print("-&gt;")
+func prompt() <span class="cov8" title="1">{
+        fmt.Print("-&gt; ")
 }</span>
 
-func readUserInput(doneChan chan bool) <span class="cov0" title="0">{
-        scanner := bufio.NewScanner(os.Stdin)
-        for </span><span class="cov0" title="0">{
+func readUserInput(in io.Reader, doneChan chan bool) <span class="cov8" title="1">{
+        scanner := bufio.NewScanner(in)
+        for </span><span class="cov8" title="1">{
                 res, done := checkNumber(scanner)
-                if done </span><span class="cov0" title="0">{
+                if done </span><span class="cov8" title="1">{
                         doneChan &lt;- true
                 }</span>
-                <span class="cov0" title="0">fmt.Println(res)
+                <span class="cov8" title="1">fmt.Println(res)
                 prompt()</span>
         }
 }
 
-func checkNumber(scanner *bufio.Scanner) (string, bool) <span class="cov0" title="0">{
+func checkNumber(scanner *bufio.Scanner) (string, bool) <span class="cov8" title="1">{
         scanner.Scan()
 
-        if strings.EqualFold(scanner.Text(), "q") </span><span class="cov0" title="0">{
-                return "", true
+        if strings.EqualFold(scanner.Text(), "q") </span><span class="cov8" title="1">{
+                return "quit", true
         }</span>
 
-        <span class="cov0" title="0">numtoCheck, err := strconv.Atoi(scanner.Text())
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">numtoCheck, err := strconv.Atoi(scanner.Text())
+        if err != nil </span><span class="cov8" title="1">{
                 return "Please enter a whole number", false
         }</span>
-        <span class="cov0" title="0">_, msg := isPrime(numtoCheck)
+        <span class="cov8" title="1">_, msg := isPrime(numtoCheck)
 
         return msg, false</span>
 }

@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"io"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -52,4 +55,59 @@ func Test_promt(t *testing.T) {
 	if string(out) != "-> " {
 		t.Error("incorrect prompt: expected -> ")
 	}
+}
+
+func Test_intro(t *testing.T) {
+	oldOut := os.Stdout
+
+	r, w, _ := os.Pipe()
+
+	os.Stdout = w
+
+	intro()
+
+	_ = w.Close()
+
+	os.Stdout = oldOut
+
+	out, _ := io.ReadAll(r)
+
+	if !strings.Contains(string(out), "Enter a whole number") {
+		t.Error("incorrect intro msg")
+	}
+}
+
+func Test_checkNumber(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{"quit", "q", "quit"},
+		{"not number", "w", "Please enter a whole number"},
+		{"prime", "7", "7 is a prime number!"},
+	}
+
+	for _, test := range tests {
+		input := strings.NewReader(test.input)
+		reader := bufio.NewScanner(input)
+		res, _ := checkNumber(reader)
+		if !strings.EqualFold(res, test.expected) {
+			t.Errorf("%s incorrect expected: 7 is a prime number!", test.name)
+		}
+	}
+}
+
+func Test_readUserInput(t *testing.T) {
+	doneChan := make(chan bool)
+
+	var stdin bytes.Buffer
+
+	stdin.Write([]byte("1\nq\n"))
+
+	go readUserInput(&stdin, doneChan)
+
+	<-doneChan
+
+	close(doneChan)
 }

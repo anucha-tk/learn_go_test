@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -12,7 +13,7 @@ func main() {
 	intro()
 
 	doneChan := make(chan bool)
-	go readUserInput(doneChan)
+	go readUserInput(os.Stdin, doneChan)
 	<-doneChan
 	close(doneChan)
 	fmt.Println("Goodbye")
@@ -29,8 +30,8 @@ func prompt() {
 	fmt.Print("-> ")
 }
 
-func readUserInput(doneChan chan bool) {
-	scanner := bufio.NewScanner(os.Stdin)
+func readUserInput(in io.Reader, doneChan chan bool) {
+	scanner := bufio.NewScanner(in)
 	for {
 		res, done := checkNumber(scanner)
 		if done {
@@ -45,7 +46,7 @@ func checkNumber(scanner *bufio.Scanner) (string, bool) {
 	scanner.Scan()
 
 	if strings.EqualFold(scanner.Text(), "q") {
-		return "", true
+		return "quit", true
 	}
 
 	numtoCheck, err := strconv.Atoi(scanner.Text())
